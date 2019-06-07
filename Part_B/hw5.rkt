@@ -129,15 +129,28 @@
             (mlet* (cdr lstlst) e2))))
 
 (define (ifeq e1 e2 e3 e4)
-  (ifgreater e1 e2 e4 (ifgreater e2 e1 e4 e3)))
+  (mlet* (list (cons "_x" e1) (cons "_y" e2))
+  (ifgreater (var "_x") (var "_y") e4 (ifgreater (var "_y") (var "_x") e4 e3))))
 
 ;; Problem 4
 
-(define mupl-map "CHANGE")
+(define mupl-map
+  (fun "curry-map-fun" "f"
+       (fun "curry-map-list" "l"
+            (ifeq (isaunit (var "l")) (int 1)
+                  (aunit)
+                  (apair (call (var "f") (fst (var "l")))
+                         (call (var "curry-map-list") (snd (var "l"))))))))
+
+   
 
 (define mupl-mapAddN 
   (mlet "map" mupl-map
-        "CHANGE (notice map is now in MUPL scope)"))
+        (fun #f "i"
+             (fun #f "l"
+                  (call (call (var "map")
+                              (fun #f "x" (add (var "i") (var "x"))))
+                        (var "l"))))))
 
 ;; Challenge Problem
 
